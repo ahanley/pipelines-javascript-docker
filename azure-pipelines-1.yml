@@ -13,23 +13,14 @@ variables:
   ImageName: 'ahanley409/my-docker-repo:azuredevops-$(Build.BuildId)'  
 
 steps:
-- task: Docker@1
-  displayName: 'Build the Docker image'
+
+- task: Docker@2
+  displayName: buildAndPush
   inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryEndpoint: 'Docker Hub'
-    command: 'Build an image'
-    dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
-    imageName: '$(ImageName)'
-    includeLatestTag: true
-    useDefaultContext: false
-    buildContext: '.'
-  
-- task: Docker@1
-  displayName: 'Push the Docker image to Dockerhub'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerRegistryEndpoint: 'Docker Hub'
-    command: 'Push an image'
-    imageName: '$(ImageName)'
-  #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    containerRegistry: 'docker-hub-registry'
+    repository: 'ahanley409/my-docker-repo'
+    command: 'buildAndPush'
+    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+      latest
